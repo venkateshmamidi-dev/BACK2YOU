@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account — Back2You</title>
+    <meta name="description" content="Sign up to Back2You and start reporting and recovering lost items on campus.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        body { background-color: var(--gray-bg); }
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1.5rem;
+        }
+        .auth-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-gray);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: var(--shadow-lg);
+        }
+        .auth-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .auth-brand .nav-logo-mark { width: 30px; height: 30px; font-size: 1rem; }
+        .auth-title { font-size: 1.5rem; margin-bottom: 0.4rem; }
+        .auth-sub { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 2rem; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 480px) { .two-col { grid-template-columns: 1fr; } }
+        .password-strength {
+            margin-top: 0.4rem;
+            display: flex;
+            gap: 4px;
+        }
+        .strength-bar {
+            flex: 1;
+            height: 4px;
+            background: var(--border-gray);
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .strength-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem; }
+        .terms-check { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.88rem; }
+        .terms-check input { margin-top: 2px; flex-shrink: 0; }
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        #form-error { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="auth-page">
+    <div class="auth-card">
+        <a href="index.html" class="auth-brand">
+            <div class="nav-logo-mark">B</div>
+            Back2You
+        </a>
+
+        <h1 class="auth-title">Create your account</h1>
+        <p class="auth-sub">Join Back2You and start helping your campus community recover lost items.</p>
+
+        <div class="alert alert-info" id="form-error">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <span id="form-error-msg">Something went wrong. Please try again.</span>
+        </div>
+
+        <form id="register-form" novalidate>
+            <div class="two-col">
+                <div class="form-group">
+                    <label class="form-label" for="first-name">First Name</label>
+                    <input type="text" id="first-name" class="form-input" placeholder="Alex" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="last-name">Last Name</label>
+                    <input type="text" id="last-name" class="form-input" placeholder="Sharma" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">Campus Email</label>
+                <input type="email" id="email" class="form-input" placeholder="your@campus.edu" required autocomplete="email">
+                <span class="form-hint">Use your official university email address</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="student-id">Student ID</label>
+                <input type="text" id="student-id" class="form-input" placeholder="STU-2024-XXXXX">
+                <span class="form-hint">Optional — helps verify ownership claims</span>
+            </div>
+
+            <div class="two-col">
+                <div class="form-group">
+                    <label class="form-label" for="department">Department</label>
+                    <select id="department" class="form-input form-select">
+                        <option value="">Select department</option>
+                        <option>Computer Science</option>
+                        <option>Electronics</option>
+                        <option>Mechanical</option>
+                        <option>Civil</option>
+                        <option>MBA</option>
+                        <option>Design</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="year">Year</label>
+                    <select id="year" class="form-input form-select">
+                        <option value="">Select year</option>
+                        <option>1st Year</option>
+                        <option>2nd Year</option>
+                        <option>3rd Year</option>
+                        <option>4th Year</option>
+                        <option>PG</option>
+                        <option>Faculty</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Create a strong password" required autocomplete="new-password">
+                <div class="password-strength" id="strength-bars">
+                    <div class="strength-bar" id="sb1"></div>
+                    <div class="strength-bar" id="sb2"></div>
+                    <div class="strength-bar" id="sb3"></div>
+                    <div class="strength-bar" id="sb4"></div>
+                </div>
+                <p class="strength-text" id="strength-label"></p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" class="form-input" placeholder="Repeat your password" required autocomplete="new-password">
+            </div>
+
+            <div class="form-group">
+                <label class="terms-check">
+                    <input type="checkbox" id="terms-check" required>
+                    <span>I agree to help return items I find to their rightful owners and use Back2You in good faith.</span>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="register-btn">Create Account</button>
+        </form>
+
+        <p class="auth-footer">
+            Already have an account? <a href="login.html">Log in</a>
+        </p>
+    </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/icons.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    if (Auth.isLoggedIn()) window.location.href = "dashboard.html";
+
+    // Password strength meter
+    const pwInput = document.getElementById("password");
+    const bars = [1,2,3,4].map(i => document.getElementById("sb" + i));
+    const label = document.getElementById("strength-label");
+    const colors = ["#DC2626", "#F59E0B", "#2563EB", "#16A34A"];
+    const labels = ["Weak", "Fair", "Good", "Strong"];
+
+    function calcStrength(pw) {
+        let score = 0;
+        if (pw.length >= 8) score++;
+        if (/[A-Z]/.test(pw)) score++;
+        if (/[0-9]/.test(pw)) score++;
+        if (/[^a-zA-Z0-9]/.test(pw)) score++;
+        return score;
+    }
+
+    pwInput.addEventListener("input", () => {
+        const s = calcStrength(pwInput.value);
+        bars.forEach((b, i) => {
+            b.style.background = i < s ? colors[s - 1] : "var(--border-gray)";
+        });
+        label.textContent = pwInput.value ? labels[s - 1] || "" : "";
+        label.style.color = colors[s - 1] || "var(--text-muted)";
+    });
+
+    document.getElementById("register-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("register-btn");
+        const errorEl = document.getElementById("form-error");
+        const errorMsg = document.getElementById("form-error-msg");
+        errorEl.style.display = "none";
+
+        const pw = document.getElementById("password").value;
+        const confirmPw = document.getElementById("confirm-password").value;
+        if (pw !== confirmPw) {
+            errorMsg.textContent = "Passwords do not match.";
+            errorEl.style.display = "flex";
+            return;
+        }
+        if (!document.getElementById("terms-check").checked) {
+            errorMsg.textContent = "Please agree to the community pledge.";
+            errorEl.style.display = "flex";
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = "Creating account...";
+        try {
+            const result = await API.register({
+                email: document.getElementById("email").value,
+                password: pw,
+                full_name: `${document.getElementById("first-name").value} ${document.getElementById("last-name").value}`.trim(),
+                student_id: document.getElementById("student-id").value || undefined,
+                department: document.getElementById("department").value || undefined,
+                year_of_study: document.getElementById("year").value || undefined,
+            });
+            Auth.setSession(result.access_token, result.user);
+            window.location.href = "dashboard.html";
+        } catch (err) {
+            errorMsg.textContent = err.message || "Registration failed. Please try again.";
+            errorEl.style.display = "flex";
+            btn.disabled = false;
+            btn.textContent = "Create Account";
+        }
+    });
+</script>
+</body>
+</html>

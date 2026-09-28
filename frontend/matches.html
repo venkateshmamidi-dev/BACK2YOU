@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Matches — Back2You</title>
+    <meta name="description" content="Browse AI-generated matches between lost and found items on Back2You.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        .matches-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .matches-filters .form-input {
+            max-width: 200px;
+            flex: 1;
+        }
+        .match-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-gray);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.2s, transform 0.15s;
+            cursor: pointer;
+        }
+        .match-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .match-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-gray);
+            background: var(--gray-bg);
+        }
+        .match-card-body { display: flex; gap: 0; flex: 1; }
+        .match-side {
+            flex: 1;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .match-side + .match-side { border-left: 1px dashed var(--border-gray); }
+        .match-side-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .match-side-label.lost { color: #DC2626; }
+        .match-side-label.found { color: var(--primary-green); }
+        .match-img {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            background: var(--gray-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border: 1px solid var(--border-gray);
+            overflow: hidden;
+        }
+        .match-img img { width: 100%; height: 100%; object-fit: cover; }
+        .match-title { font-size: 0.88rem; font-weight: 700; color: var(--text-primary); }
+        .match-meta { font-size: 0.78rem; color: var(--text-muted); }
+        .match-card-footer {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--border-gray);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .confidence-ring-wrap { display: flex; align-items: center; gap: 0.5rem; }
+        .score-bar-wrap { flex: 1; }
+        .score-bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 3px; font-size: 0.75rem; }
+        .score-bar-bg { flex: 1; height: 5px; background: var(--border-gray); border-radius: 99px; overflow: hidden; }
+        .score-bar-fill { height: 100%; border-radius: 99px; background: var(--primary-blue); }
+        .matches-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+        @media (max-width: 860px) { .matches-grid { grid-template-columns: 1fr; } }
+        .confidence-label-text { font-size: 0.78rem; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container nav-container">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo-mark">B</div>
+            <div>Back2You <span class="nav-tagline-sub">Campus Lost &amp; Found</span></div>
+        </a>
+        <ul class="nav-links" id="nav-links-list">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="report-lost.html">Report Lost</a></li>
+            <li><a href="report-found.html">Report Found</a></li>
+            <li><a href="matches.html" class="active">Matches</a></li>
+            <li><a href="claims.html">Claims</a></li>
+            <li><a href="community.html">Community</a></li>
+            <li id="nav-admin-link" style="display:none"><a href="admin.html">Admin</a></li>
+        </ul>
+        <div class="nav-actions">
+            <div id="nav-auth-links" style="display:flex;gap:0.75rem;"><a href="login.html" class="btn btn-secondary btn-sm">Log In</a><a href="register.html" class="btn btn-primary btn-sm">Get Started</a></div>
+            <div id="nav-user-links" style="display:none;gap:0.75rem;align-items:center;flex-direction:row;">
+                <a href="notifications.html" class="notif-bell-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="notif-badge" id="notif-badge" style="display:none;">0</span></a>
+                <a href="profile.html" class="user-menu-btn"><div class="avatar-circle" id="nav-avatar">U</div><span id="nav-user-name">User</span></a>
+                <a href="#" id="logout-btn" class="btn btn-secondary btn-sm">Log Out</a>
+            </div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <div>
+                <h1>AI Matches</h1>
+                <p class="page-subtitle">Potential matches ranked by confidence score — powered by Computer Vision and NLP</p>
+            </div>
+            <div class="page-header-actions">
+                <a href="report-lost.html" class="btn btn-outline">Report Lost</a>
+                <a href="report-found.html" class="btn btn-primary">Report Found</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container">
+        <!-- Filters -->
+        <div class="card" style="margin-bottom:1.5rem;">
+            <div class="card-body">
+                <div class="matches-filters">
+                    <select id="filter-category" class="form-input form-select">
+                        <option value="">All Categories</option>
+                        <option>Electronics</option>
+                        <option>Bags &amp; Backpacks</option>
+                        <option>Books &amp; Notes</option>
+                        <option>Clothing</option>
+                        <option>Keys</option>
+                        <option>Wallet / ID Cards</option>
+                        <option>Other</option>
+                    </select>
+                    <select id="filter-score" class="form-input form-select">
+                        <option value="">All Confidence Levels</option>
+                        <option value="0.7">High (&gt;70%)</option>
+                        <option value="0.4">Medium (&gt;40%)</option>
+                        <option value="0">All Scores</option>
+                    </select>
+                    <select id="filter-status" class="form-input form-select">
+                        <option value="">All Statuses</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="CONFIRMED">Confirmed</option>
+                        <option value="REJECTED">Rejected</option>
+                    </select>
+                    <button class="btn btn-secondary" id="apply-filters">Apply Filters</button>
+                    <button class="btn btn-outline" id="reset-filters">Reset</button>
+                    <div style="margin-left:auto;font-size:0.88rem;color:var(--text-muted);" id="result-count">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="matches-container">
+            <div class="loading-state" style="padding:3rem;">
+                <div class="loading-spinner"></div>
+                <p>Running AI matching engine...</p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" style="display:flex;justify-content:center;gap:0.5rem;margin-top:2rem;"></div>
+    </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/icons.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    let currentPage = 0;
+    const LIMIT = 12;
+
+    async function loadMatches(page = 0) {
+        const container = document.getElementById("matches-container");
+        container.innerHTML = `<div class="loading-state" style="padding:3rem;"><div class="loading-spinner"></div><p>Loading matches...</p></div>`;
+
+        const params = {
+            skip: page * LIMIT,
+            limit: LIMIT,
+            category: document.getElementById("filter-category").value || undefined,
+            min_score: document.getElementById("filter-score").value || undefined,
+            status: document.getElementById("filter-status").value || undefined,
+        };
+
+        try {
+            const matches = await API.getMatches(params);
+            document.getElementById("result-count").textContent = `${matches.length} match${matches.length !== 1 ? "es" : ""} found`;
+
+            if (!matches.length) {
+                container.innerHTML = `<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><h4>No matches found</h4><p>The AI hasn't found any matches yet, or no items match your filters.</p><a href="report-lost.html" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">Report a Lost Item</a></div>`;
+                return;
+            }
+
+            container.innerHTML = `<div class="matches-grid">${matches.map(renderMatchCard).join("")}</div>`;
+        } catch (err) {
+            container.innerHTML = `<div class="empty-state"><h4>Could not load matches</h4><p>${err.message || "Backend not connected."}</p><p style="font-size:0.82rem;margin-top:0.5rem;color:var(--text-muted);">Showing demo layout below.</p></div>`;
+            renderDemoMatches();
+        }
+    }
+
+    function renderMatchCard(m) {
+        const score = Math.round((m.confidence_score || 0) * 100);
+        const color = score > 70 ? "#16A34A" : score > 40 ? "#2563EB" : "#F59E0B";
+        const label = score > 70 ? "High" : score > 40 ? "Medium" : "Low";
+
+        return `<div class="match-card" onclick="window.location.href='item-details.html?match=${m.id}'">
+            <div class="match-card-header">
+                <div style="display:flex;align-items:center;gap:0.5rem;">
+                    <span class="badge ${score > 70 ? 'badge-success' : score > 40 ? 'badge-info' : 'badge-warning'}">${label} Confidence</span>
+                    <span style="font-size:0.78rem;color:var(--text-muted);">${formatDate(m.created_at)}</span>
+                </div>
+                <span style="font-size:1.2rem;font-weight:800;color:${color};">${score}%</span>
+            </div>
+            <div class="match-card-body">
+                <div class="match-side">
+                    <div class="match-side-label lost">Lost Item</div>
+                    <div class="match-img">${m.lost_item_image ? `<img src="${m.lost_item_image}" alt="lost">` : `<span>No image</span>`}</div>
+                    <div class="match-title">${escapeHtml(m.lost_item_title || "—")}</div>
+                    <div class="match-meta">${escapeHtml(m.lost_item_category || "")}</div>
+                </div>
+                <div class="match-side">
+                    <div class="match-side-label found">Found Item</div>
+                    <div class="match-img">${m.found_item_image ? `<img src="${m.found_item_image}" alt="found">` : `<span>No image</span>`}</div>
+                    <div class="match-title">${escapeHtml(m.found_item_title || "—")}</div>
+                    <div class="match-meta">${escapeHtml(m.found_item_category || "")}</div>
+                </div>
+            </div>
+            <div class="match-card-footer">
+                <div class="score-bar-wrap">
+                    ${renderScoreBars(m)}
+                </div>
+                <a href="claims.html?match=${m.id}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">Claim</a>
+            </div>
+        </div>`;
+    }
+
+    function renderScoreBars(m) {
+        const components = [
+            { label: "Visual", key: "image_score" },
+            { label: "Text", key: "text_score" },
+            { label: "Location", key: "location_score" },
+        ];
+        return components.map(c => {
+            const v = Math.round((m[c.key] || 0) * 100);
+            return `<div class="score-bar-row">
+                <span style="width:48px;">${c.label}</span>
+                <div class="score-bar-bg"><div class="score-bar-fill" style="width:${v}%;background:${v > 60 ? '#16A34A' : v > 30 ? '#2563EB' : '#9CA3AF'};"></div></div>
+                <span style="width:32px;text-align:right;color:var(--text-muted);">${v}%</span>
+            </div>`;
+        }).join("");
+    }
+
+    function renderDemoMatches() {
+        // Demo match cards for offline preview
+        const demo = [
+            { id: "d1", confidence_score: 0.87, lost_item_title: "Blue Dell XPS Laptop", found_item_title: "Dell Laptop (Blue)", lost_item_category: "Electronics", found_item_category: "Electronics", image_score: 0.9, text_score: 0.85, location_score: 0.8, created_at: new Date().toISOString() },
+            { id: "d2", confidence_score: 0.63, lost_item_title: "Black Leather Wallet", found_item_title: "Dark Wallet found near Cafeteria", lost_item_category: "Wallet / ID Cards", found_item_category: "Wallet / ID Cards", image_score: 0.5, text_score: 0.75, location_score: 0.6, created_at: new Date().toISOString() },
+            { id: "d3", confidence_score: 0.45, lost_item_title: "Apple AirPods Pro", found_item_title: "White Earbuds (Apple case)", lost_item_category: "Electronics", found_item_category: "Electronics", image_score: 0.4, text_score: 0.55, location_score: 0.3, created_at: new Date().toISOString() },
+        ];
+        const container = document.getElementById("matches-container");
+        const existing = container.querySelector(".empty-state");
+        if (existing) {
+            const grid = document.createElement("div");
+            grid.className = "matches-grid";
+            grid.style.marginTop = "1.5rem";
+            grid.innerHTML = demo.map(renderMatchCard).join("");
+            container.appendChild(grid);
+        }
+    }
+
+    document.getElementById("apply-filters").addEventListener("click", () => loadMatches(0));
+    document.getElementById("reset-filters").addEventListener("click", () => {
+        document.getElementById("filter-category").value = "";
+        document.getElementById("filter-score").value = "";
+        document.getElementById("filter-status").value = "";
+        loadMatches(0);
+    });
+
+    function escapeHtml(s) { if (!s) return ""; return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+    function formatDate(d) { if (!d) return ""; return new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short" }); }
+
+    loadMatches();
+</script>
+</body>
+</html>

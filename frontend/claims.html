@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claims — Back2You</title>
+    <meta name="description" content="Submit and manage ownership claims for lost and found items on Back2You.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        .claim-form-card { margin-bottom: 1.5rem; }
+        .verification-questions { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 0.5rem; }
+        .verification-q { background: var(--gray-bg); border: 1px solid var(--border-gray); border-radius: var(--radius-sm); padding: 1rem; }
+        .verification-q label { font-weight: 700; margin-bottom: 0.5rem; display: block; font-size: 0.9rem; }
+        .verification-q .form-input { background: var(--bg-white); }
+        .claims-list-item { border: 1px solid var(--border-gray); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 1rem; }
+        .claims-list-item-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; background: var(--gray-bg); border-bottom: 1px solid var(--border-gray); }
+        .claims-list-item-body { padding: 1.25rem; }
+        .claim-answer { background: var(--gray-bg); border-radius: var(--radius-sm); padding: 0.6rem 0.85rem; margin-bottom: 0.5rem; }
+        .claim-answer-q { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin-bottom: 0.2rem; }
+        .claim-answer-a { font-size: 0.9rem; color: var(--text-primary); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container nav-container">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo-mark">B</div>
+            <div>Back2You <span class="nav-tagline-sub">Campus Lost &amp; Found</span></div>
+        </a>
+        <ul class="nav-links" id="nav-links-list">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="report-lost.html">Report Lost</a></li>
+            <li><a href="report-found.html">Report Found</a></li>
+            <li><a href="matches.html">Matches</a></li>
+            <li><a href="claims.html" class="active">Claims</a></li>
+            <li><a href="community.html">Community</a></li>
+            <li id="nav-admin-link" style="display:none"><a href="admin.html">Admin</a></li>
+        </ul>
+        <div class="nav-actions">
+            <div id="nav-auth-links" style="display:flex;gap:0.75rem;"><a href="login.html" class="btn btn-secondary btn-sm">Log In</a><a href="register.html" class="btn btn-primary btn-sm">Get Started</a></div>
+            <div id="nav-user-links" style="display:none;gap:0.75rem;align-items:center;flex-direction:row;">
+                <a href="notifications.html" class="notif-bell-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="notif-badge" id="notif-badge" style="display:none;">0</span></a>
+                <a href="profile.html" class="user-menu-btn"><div class="avatar-circle" id="nav-avatar">U</div><span id="nav-user-name">User</span></a>
+                <a href="#" id="logout-btn" class="btn btn-secondary btn-sm">Log Out</a>
+            </div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <div>
+                <h1>Ownership Claims</h1>
+                <p class="page-subtitle">Submit a verified claim to recover your lost item</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="dashboard-main">
+
+                <!-- New claim form (shown if ?item=xxx) -->
+                <div id="new-claim-section" style="display:none;">
+                    <div class="card claim-form-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Submit Ownership Claim</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info" style="margin-bottom:1.25rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                Provide detailed answers. An admin will review your claim and verify ownership before approving the handover.
+                            </div>
+                            <form id="claim-form">
+                                <div class="form-group">
+                                    <label class="form-label required" for="claim-item-id">Found Item ID or Reference</label>
+                                    <input type="text" id="claim-item-id" class="form-input" placeholder="Enter item ID or leave as-is" required>
+                                </div>
+                                <div class="verification-questions">
+                                    <div class="verification-q">
+                                        <label>What makes this item yours? Describe any unique identifiers.</label>
+                                        <textarea class="form-input form-textarea" rows="3" id="q1" maxlength="400" required placeholder="e.g. My laptop has a cracked corner and a GDG sticker on the lid. Serial number: ABC123."></textarea>
+                                    </div>
+                                    <div class="verification-q">
+                                        <label>When and where did you last have the item?</label>
+                                        <textarea class="form-input form-textarea" rows="2" id="q2" maxlength="300" required placeholder="e.g. I left it on the library table on Monday evening around 6pm."></textarea>
+                                    </div>
+                                    <div class="verification-q">
+                                        <label>Can you provide any proof of ownership? (purchase receipt, serial number, photos with the item)</label>
+                                        <textarea class="form-input form-textarea" rows="2" id="q3" maxlength="300" placeholder="e.g. I have the original box with the serial number. I can share purchase receipt from Amazon."></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-top:1.25rem;">
+                                    <label class="form-label" for="contact-preference">Preferred Contact Method</label>
+                                    <input type="text" id="contact-preference" class="form-input" placeholder="e.g. Email me at my college ID, or call 9XXXXXXXXX">
+                                </div>
+                                <div id="claim-error" class="alert alert-info" style="display:none;margin-top:1rem;"><span id="claim-error-msg"></span></div>
+                                <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:1.25rem;">
+                                    <a href="matches.html" class="btn btn-secondary btn-lg">Cancel</a>
+                                    <button type="submit" class="btn btn-primary btn-lg" id="claim-submit-btn">Submit Claim</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing claims list -->
+                <div id="my-claims-section">
+                    <div class="section-heading" style="margin-bottom:1rem;">
+                        <h2 style="font-size:1.2rem;">My Claims</h2>
+                    </div>
+                    <div id="claims-list">
+                        <div class="loading-state" style="padding:3rem;"><div class="loading-spinner"></div><p>Loading claims...</p></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sidebar: how it works -->
+            <div class="dashboard-sidebar">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">Claim Verification Process</h3></div>
+                    <div class="card-body">
+                        <ol style="padding-left:1.25rem;display:flex;flex-direction:column;gap:0.85rem;">
+                            <li style="font-size:0.88rem;color:var(--text-secondary);"><strong>Submit Claim</strong> — Fill out the ownership verification form with as much detail as possible.</li>
+                            <li style="font-size:0.88rem;color:var(--text-secondary);"><strong>Admin Review</strong> — A campus admin reviews your answers and the AI confidence score.</li>
+                            <li style="font-size:0.88rem;color:var(--text-secondary);"><strong>Verification</strong> — Admin may ask for additional proof (receipt, ID, etc).</li>
+                            <li style="font-size:0.88rem;color:var(--text-secondary);"><strong>Handover</strong> — Once approved, admin coordinates the item handover with the finder.</li>
+                            <li style="font-size:0.88rem;color:var(--text-secondary);"><strong>Finder Rewarded</strong> — The finder receives Helper Points for their contribution.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">Claim Tips</h3></div>
+                    <div class="card-body" style="display:flex;flex-direction:column;gap:0.75rem;">
+                        <p style="font-size:0.88rem;color:var(--text-muted);">Be as specific as possible. Vague claims are more likely to be rejected.</p>
+                        <p style="font-size:0.88rem;color:var(--text-muted);">Unique marks like stickers, scratches, or engravings are very strong identifiers.</p>
+                        <p style="font-size:0.88rem;color:var(--text-muted);">False claims are taken seriously. Only submit a claim for items that are genuinely yours.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/icons.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    Auth.requireAuth();
+
+    const params = new URLSearchParams(window.location.search);
+    const itemId = params.get("item");
+    const matchIdParam = params.get("match");
+
+    if (itemId || matchIdParam) {
+        document.getElementById("new-claim-section").style.display = "block";
+        const refInput = document.getElementById("claim-item-id");
+        refInput.value = itemId || matchIdParam;
+    }
+
+    // Load my claims
+    async function loadClaims() {
+        const el = document.getElementById("claims-list");
+        try {
+            const claims = await API.getMyClaims();
+            if (!claims.length) {
+                el.innerHTML = `<div class="empty-state"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg><h4>No claims submitted yet</h4><p>Use the matches page to find a potential match and submit a claim.</p><a href="matches.html" class="btn btn-primary btn-sm" style="margin-top:0.75rem;">Browse Matches</a></div>`;
+                return;
+            }
+            el.innerHTML = claims.map(c => `
+                <div class="claims-list-item">
+                    <div class="claims-list-item-header">
+                        <div>
+                            <div style="font-weight:700;font-size:0.95rem;">${escapeHtml(c.item_title || "Claim #" + c.id)}</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted);">Submitted ${formatDate(c.created_at)}</div>
+                        </div>
+                        <span class="badge ${claimStatusClass(c.status)}">${c.status}</span>
+                    </div>
+                    <div class="claims-list-item-body">
+                        <div class="claim-answer">
+                            <div class="claim-answer-q">Unique Identifiers</div>
+                            <div class="claim-answer-a">${escapeHtml(c.verification_answers?.q1 || "—")}</div>
+                        </div>
+                        ${c.admin_notes ? `<div style="margin-top:0.75rem;padding:0.75rem;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:var(--radius-sm);font-size:0.85rem;"><strong>Admin note:</strong> ${escapeHtml(c.admin_notes)}</div>` : ""}
+                    </div>
+                </div>`).join("");
+        } catch {
+            el.innerHTML = `<div class="empty-state"><h4>Could not load claims</h4><p>Backend may not be connected.</p></div>`;
+        }
+    }
+
+    function claimStatusClass(s) {
+        const map = { PENDING: "badge-warning", APPROVED: "badge-success", REJECTED: "badge-error", UNDER_REVIEW: "badge-info" };
+        return map[s] || "badge-neutral";
+    }
+
+    document.getElementById("claim-form")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("claim-submit-btn");
+        const errorEl = document.getElementById("claim-error");
+        const errorMsg = document.getElementById("claim-error-msg");
+        errorEl.style.display = "none";
+        btn.disabled = true;
+        btn.textContent = "Submitting...";
+
+        try {
+            await API.submitClaim({
+                item_id: document.getElementById("claim-item-id").value,
+                verification_answers: {
+                    q1: document.getElementById("q1").value,
+                    q2: document.getElementById("q2").value,
+                    q3: document.getElementById("q3").value,
+                },
+                contact_preference: document.getElementById("contact-preference").value,
+            });
+            showToast("Claim submitted. Admin will review it shortly.", "success");
+            document.getElementById("new-claim-section").style.display = "none";
+            loadClaims();
+        } catch (err) {
+            errorMsg.textContent = err.message || "Failed to submit claim.";
+            errorEl.style.display = "flex";
+            btn.disabled = false;
+            btn.textContent = "Submit Claim";
+        }
+    });
+
+    function escapeHtml(s) { if (!s) return ""; return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+    function formatDate(d) { if (!d) return ""; return new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }); }
+
+    loadClaims();
+</script>
+</body>
+</html>

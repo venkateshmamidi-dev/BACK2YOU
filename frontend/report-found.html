@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Found Item — Back2You</title>
+    <meta name="description" content="Report a found item on Back2You to help reunite it with its owner.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        .upload-zone {
+            border: 2px dashed var(--border-gray);
+            border-radius: var(--radius-md);
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            background: var(--gray-bg);
+        }
+        .upload-zone:hover, .upload-zone.dragover { border-color: var(--primary-green); background: #F0FDF4; }
+        .upload-zone p { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; }
+        #preview-img { max-width: 100%; max-height: 200px; object-fit: cover; border-radius: var(--radius-sm); margin-top: 1rem; display: none; border: 1px solid var(--border-gray); }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+        .location-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+        .location-tag { padding: 0.3rem 0.75rem; border: 1px solid var(--border-gray); border-radius: 9999px; font-size: 0.82rem; cursor: pointer; transition: all 0.15s; background: var(--bg-white); }
+        .location-tag:hover, .location-tag.selected { background: var(--primary-green); color: white; border-color: var(--primary-green); }
+        .tip-box { background: #F0FDF4; border: 1px solid #BBF7D0; border-left: 3px solid var(--primary-green); border-radius: var(--radius-sm); padding: 0.85rem 1rem; font-size: 0.88rem; color: #166534; }
+        .tip-box h4 { font-size: 0.88rem; margin-bottom: 0.3rem; }
+        .custody-info { background: #FFFBEB; border: 1px solid #FDE68A; border-left: 3px solid #F59E0B; border-radius: var(--radius-sm); padding: 0.85rem 1rem; font-size: 0.88rem; color: #78350F; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container nav-container">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo-mark">B</div>
+            <div>Back2You <span class="nav-tagline-sub">Campus Lost &amp; Found</span></div>
+        </a>
+        <ul class="nav-links" id="nav-links-list">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="report-lost.html">Report Lost</a></li>
+            <li><a href="report-found.html" class="active">Report Found</a></li>
+            <li><a href="matches.html">Matches</a></li>
+            <li><a href="community.html">Community</a></li>
+            <li id="nav-admin-link" style="display:none"><a href="admin.html">Admin</a></li>
+        </ul>
+        <div class="nav-actions">
+            <div id="nav-auth-links" style="display:flex;gap:0.75rem;"><a href="login.html" class="btn btn-secondary btn-sm">Log In</a><a href="register.html" class="btn btn-primary btn-sm">Get Started</a></div>
+            <div id="nav-user-links" style="display:none;gap:0.75rem;align-items:center;flex-direction:row;">
+                <a href="notifications.html" class="notif-bell-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="notif-badge" id="notif-badge" style="display:none;">0</span></a>
+                <a href="profile.html" class="user-menu-btn"><div class="avatar-circle" id="nav-avatar">U</div><span id="nav-user-name">User</span></a>
+                <a href="#" id="logout-btn" class="btn btn-secondary btn-sm">Log Out</a>
+            </div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header" style="border-left: 4px solid var(--primary-green);">
+    <div class="container">
+        <div class="page-header-content">
+            <div>
+                <h1>Report a Found Item</h1>
+                <p class="page-subtitle">You found something — let's get it back to its owner</p>
+            </div>
+            <a href="dashboard.html" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="dashboard-main">
+                <div class="custody-info">
+                    <strong>Item Custody Guidelines:</strong> Please keep the found item safe in your possession until the admin approves a verified claim. Do not hand over items to unverified individuals.
+                </div>
+
+                <form id="report-found-form" enctype="multipart/form-data">
+                    <div class="card" style="margin-bottom:1.5rem;">
+                        <div class="card-header"><h3 class="card-title">Item Details</h3></div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label required" for="title">Item Name / Description</label>
+                                <input type="text" id="title" class="form-input" placeholder="e.g. Gray Laptop Bag, Black Samsung Phone" required maxlength="120">
+                            </div>
+                            <div class="two-col">
+                                <div class="form-group">
+                                    <label class="form-label required" for="category">Category</label>
+                                    <select id="category" class="form-input form-select" required>
+                                        <option value="">Select category</option>
+                                        <option>Electronics</option>
+                                        <option>Bags &amp; Backpacks</option>
+                                        <option>Books &amp; Notes</option>
+                                        <option>Clothing</option>
+                                        <option>Keys</option>
+                                        <option>Wallet / ID Cards</option>
+                                        <option>Jewellery &amp; Accessories</option>
+                                        <option>Sports Equipment</option>
+                                        <option>Stationery</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="color">Primary Color</label>
+                                    <input type="text" id="color" class="form-input" placeholder="e.g. Black, Silver, Red">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required" for="description">Description</label>
+                                <textarea id="description" class="form-input form-textarea" rows="4" required maxlength="800"
+                                    placeholder="Describe what you found: brand, model, condition, any visible identification marks, etc."></textarea>
+                                <span class="form-hint"><span id="desc-count">0</span>/800 characters</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom:1.5rem;">
+                        <div class="card-header"><h3 class="card-title">When &amp; Where Found</h3></div>
+                        <div class="card-body">
+                            <div class="two-col">
+                                <div class="form-group">
+                                    <label class="form-label required" for="found-date">Date Found</label>
+                                    <input type="date" id="found-date" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="found-time">Approximate Time</label>
+                                    <input type="time" id="found-time" class="form-input">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required" for="location">Location Found</label>
+                                <input type="text" id="location" class="form-input" required placeholder="e.g. CS Lab 203, Main Cafeteria Table 4, Library Exit">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Common Locations (Quick Select)</label>
+                                <div class="location-tags" id="location-tags">
+                                    <span class="location-tag" data-val="Library">Library</span>
+                                    <span class="location-tag" data-val="Cafeteria">Cafeteria</span>
+                                    <span class="location-tag" data-val="CS Department">CS Dept.</span>
+                                    <span class="location-tag" data-val="Sports Ground">Sports Ground</span>
+                                    <span class="location-tag" data-val="Auditorium">Auditorium</span>
+                                    <span class="location-tag" data-val="Hostel Block A">Hostel A</span>
+                                    <span class="location-tag" data-val="Hostel Block B">Hostel B</span>
+                                    <span class="location-tag" data-val="Parking Lot">Parking Lot</span>
+                                    <span class="location-tag" data-val="Main Gate">Main Gate</span>
+                                    <span class="location-tag" data-val="Labs">Labs</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="holding-location">Where are you keeping it?</label>
+                                <input type="text" id="holding-location" class="form-input" placeholder="e.g. My hostel room, Lost &amp; Found desk, CS Dept. Reception">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom:1.5rem;">
+                        <div class="card-header"><h3 class="card-title">Upload Photo</h3></div>
+                        <div class="card-body">
+                            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('image-input').click()">
+                                <div style="color:var(--text-muted);margin-bottom:0.5rem;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                                </div>
+                                <strong>Click to upload a photo</strong>
+                                <p>A clear photo of the found item greatly improves matching accuracy</p>
+                                <img id="preview-img" alt="Preview">
+                            </div>
+                            <input type="file" id="image-input" accept="image/*" style="display:none">
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info" id="form-error" style="display:none;"><span id="form-error-msg"></span></div>
+
+                    <div style="display:flex;gap:1rem;justify-content:flex-end;">
+                        <a href="dashboard.html" class="btn btn-secondary btn-lg">Cancel</a>
+                        <button type="submit" class="btn btn-primary btn-lg" id="submit-btn" style="background:var(--primary-green);border-color:var(--primary-green);">Submit Found Report</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="dashboard-sidebar">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">You're a Community Hero</h3></div>
+                    <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+                        <p style="font-size:0.88rem;color:var(--text-secondary);">Reporting found items earns you Helper Points and keeps our campus community honest.</p>
+                        <div class="tip-box">
+                            <h4>Earn 50 Points</h4>
+                            <p>For each found item successfully returned to its owner.</p>
+                        </div>
+                        <div class="tip-box">
+                            <h4>Build Your Streak</h4>
+                            <p>Consistent reporting increases your streak multiplier and unlocks badges.</p>
+                        </div>
+                        <div class="tip-box">
+                            <h4>Claim Verification</h4>
+                            <p>Admin will verify the owner's claim before any handover is requested from you.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/icons.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    Auth.requireAuth();
+
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("found-date").max = today;
+    document.getElementById("found-date").value = today;
+
+    const descInput = document.getElementById("description");
+    descInput.addEventListener("input", () => document.getElementById("desc-count").textContent = descInput.value.length);
+
+    document.querySelectorAll(".location-tag").forEach(tag => {
+        tag.addEventListener("click", () => {
+            document.querySelectorAll(".location-tag").forEach(t => t.classList.remove("selected"));
+            tag.classList.add("selected");
+            document.getElementById("location").value = tag.dataset.val;
+        });
+    });
+
+    const imgInput = document.getElementById("image-input");
+    const preview = document.getElementById("preview-img");
+    const zone = document.getElementById("upload-zone");
+
+    imgInput.addEventListener("change", () => {
+        if (imgInput.files[0]) { preview.src = URL.createObjectURL(imgInput.files[0]); preview.style.display = "block"; }
+    });
+    zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("dragover"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("dragover"));
+    zone.addEventListener("drop", (e) => {
+        e.preventDefault(); zone.classList.remove("dragover");
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) {
+            const dt = new DataTransfer(); dt.items.add(file); imgInput.files = dt.files;
+            preview.src = URL.createObjectURL(file); preview.style.display = "block";
+        }
+    });
+
+    document.getElementById("report-found-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("submit-btn");
+        const errorEl = document.getElementById("form-error");
+        const errorMsg = document.getElementById("form-error-msg");
+        errorEl.style.display = "none";
+        btn.disabled = true;
+        btn.textContent = "Submitting...";
+
+        try {
+            const formData = new FormData();
+            formData.append("type", "FOUND");
+            formData.append("title", document.getElementById("title").value);
+            formData.append("description", document.getElementById("description").value);
+            formData.append("category", document.getElementById("category").value);
+            formData.append("color", document.getElementById("color").value);
+            formData.append("location_description", document.getElementById("location").value);
+            formData.append("date_occurred", document.getElementById("found-date").value);
+            const time = document.getElementById("found-time").value;
+            if (time) formData.append("time_occurred", time);
+            const holding = document.getElementById("holding-location").value;
+            if (holding) formData.append("holding_location", holding);
+            if (imgInput.files[0]) formData.append("image", imgInput.files[0]);
+
+            const result = await API.createItem(formData);
+            showToast("Found report submitted! Thank you for helping.", "success");
+            setTimeout(() => window.location.href = `item-details.html?id=${result.id}`, 1200);
+        } catch (err) {
+            errorMsg.textContent = err.message || "Failed to submit. Please try again.";
+            errorEl.style.display = "flex";
+            btn.disabled = false;
+            btn.textContent = "Submit Found Report";
+        }
+    });
+</script>
+</body>
+</html>

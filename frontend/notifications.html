@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications — Back2You</title>
+    <meta name="description" content="Your Back2You notifications — match alerts, claim updates, and system messages.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        .notif-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.1rem 1.25rem;
+            border-bottom: 1px solid var(--border-gray);
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-item:hover { background: var(--gray-bg); }
+        .notif-item.unread { background: #EFF6FF; border-left: 3px solid var(--primary-blue); }
+        .notif-item.unread:hover { background: #DBEAFE; }
+        .notif-icon-wrap {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .notif-type-match { background: #EFF6FF; color: var(--primary-blue); }
+        .notif-type-claim { background: #FFF7ED; color: #EA580C; }
+        .notif-type-system { background: var(--gray-bg); color: var(--text-muted); }
+        .notif-type-success { background: #F0FDF4; color: var(--primary-green); }
+        .notif-body { flex: 1; min-width: 0; }
+        .notif-title { font-weight: 700; font-size: 0.92rem; color: var(--text-primary); margin-bottom: 0.2rem; }
+        .notif-message { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+        .notif-time { font-size: 0.75rem; color: var(--text-muted); }
+        .notif-unread-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary-blue); flex-shrink: 0; margin-top: 6px; }
+        .filter-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container nav-container">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo-mark">B</div>
+            <div>Back2You <span class="nav-tagline-sub">Campus Lost &amp; Found</span></div>
+        </a>
+        <ul class="nav-links" id="nav-links-list">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="report-lost.html">Report Lost</a></li>
+            <li><a href="report-found.html">Report Found</a></li>
+            <li><a href="matches.html">Matches</a></li>
+            <li><a href="community.html">Community</a></li>
+            <li id="nav-admin-link" style="display:none"><a href="admin.html">Admin</a></li>
+        </ul>
+        <div class="nav-actions">
+            <div id="nav-auth-links" style="display:flex;gap:0.75rem;"><a href="login.html" class="btn btn-secondary btn-sm">Log In</a><a href="register.html" class="btn btn-primary btn-sm">Get Started</a></div>
+            <div id="nav-user-links" style="display:none;gap:0.75rem;align-items:center;flex-direction:row;">
+                <a href="notifications.html" class="notif-bell-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="notif-badge" id="notif-badge" style="display:none;">0</span></a>
+                <a href="profile.html" class="user-menu-btn"><div class="avatar-circle" id="nav-avatar">U</div><span id="nav-user-name">User</span></a>
+                <a href="#" id="logout-btn" class="btn btn-secondary btn-sm">Log Out</a>
+            </div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <div>
+                <h1>Notifications</h1>
+                <p class="page-subtitle" id="notif-summary">Loading...</p>
+            </div>
+            <button class="btn btn-secondary" id="mark-all-read-btn">Mark All as Read</button>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container" style="max-width:760px;">
+        <!-- Filter tabs -->
+        <div class="filter-tabs">
+            <button class="btn btn-primary btn-sm notif-filter active" data-filter="all">All</button>
+            <button class="btn btn-secondary btn-sm notif-filter" data-filter="MATCH">Matches</button>
+            <button class="btn btn-secondary btn-sm notif-filter" data-filter="CLAIM">Claims</button>
+            <button class="btn btn-secondary btn-sm notif-filter" data-filter="SYSTEM">System</button>
+            <button class="btn btn-secondary btn-sm notif-filter" data-filter="unread">Unread Only</button>
+        </div>
+
+        <div class="card">
+            <div id="notif-list">
+                <div class="loading-state" style="padding:3rem;"><div class="loading-spinner"></div><p>Loading notifications...</p></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/icons.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    Auth.requireAuth();
+
+    let allNotifications = [];
+    let activeFilter = "all";
+
+    const NOTIF_ICONS = {
+        MATCH: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`,
+        CLAIM: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>`,
+        SYSTEM: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`,
+        SUCCESS: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+    };
+
+    async function loadNotifications() {
+        try {
+            const notifs = await API.getNotifications(50);
+            allNotifications = notifs;
+            const unread = notifs.filter(n => !n.is_read).length;
+            document.getElementById("notif-summary").textContent =
+                unread > 0 ? `${unread} unread notification${unread !== 1 ? 's' : ''}` : "All caught up";
+            renderNotifications();
+        } catch {
+            // Demo notifications for offline mode
+            allNotifications = [
+                { id: "n1", type: "MATCH", title: "New AI Match Found", message: "Your lost Blue Dell Laptop has a potential match with 87% confidence.", is_read: false, created_at: new Date(Date.now() - 3600000).toISOString(), link: "matches.html" },
+                { id: "n2", type: "CLAIM", title: "Claim Approved", message: "Your ownership claim for the Black Wallet has been approved by admin.", is_read: false, created_at: new Date(Date.now() - 86400000).toISOString(), link: "claims.html" },
+                { id: "n3", type: "SUCCESS", title: "Item Returned", message: "Congratulations! Your Apple AirPods Pro have been successfully returned.", is_read: true, created_at: new Date(Date.now() - 172800000).toISOString(), link: "dashboard.html" },
+                { id: "n4", type: "SYSTEM", title: "Welcome to Back2You", message: "Your account has been set up. Start by reporting a lost or found item.", is_read: true, created_at: new Date(Date.now() - 604800000).toISOString(), link: "index.html" },
+            ];
+            document.getElementById("notif-summary").textContent = "2 unread notifications (demo mode)";
+            renderNotifications();
+        }
+    }
+
+    function renderNotifications() {
+        const el = document.getElementById("notif-list");
+        let filtered = allNotifications;
+        if (activeFilter !== "all") {
+            if (activeFilter === "unread") filtered = allNotifications.filter(n => !n.is_read);
+            else filtered = allNotifications.filter(n => n.type === activeFilter);
+        }
+
+        if (!filtered.length) {
+            el.innerHTML = `<div class="empty-state" style="padding:3rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                <h4>No notifications</h4>
+                <p>You're all caught up.</p>
+            </div>`;
+            return;
+        }
+
+        el.innerHTML = filtered.map(n => {
+            const typeClass = n.type === "SUCCESS" ? "notif-type-success" :
+                n.type === "MATCH" ? "notif-type-match" :
+                n.type === "CLAIM" ? "notif-type-claim" : "notif-type-system";
+            return `<div class="notif-item ${n.is_read ? '' : 'unread'}" data-id="${n.id}" onclick="openNotif('${n.id}', '${n.link || 'dashboard.html'}')">
+                <div class="notif-icon-wrap ${typeClass}">${NOTIF_ICONS[n.type] || NOTIF_ICONS.SYSTEM}</div>
+                <div class="notif-body">
+                    <div class="notif-title">${escapeHtml(n.title)}</div>
+                    <div class="notif-message">${escapeHtml(n.message)}</div>
+                    <div class="notif-time">${timeAgo(n.created_at)}</div>
+                </div>
+                ${!n.is_read ? '<div class="notif-unread-dot"></div>' : ''}
+            </div>`;
+        }).join("");
+    }
+
+    async function openNotif(id, link) {
+        // Mark as read
+        const n = allNotifications.find(x => x.id === id);
+        if (n && !n.is_read) {
+            n.is_read = true;
+            try { await API.markNotificationRead(id); } catch {}
+            renderNotifications();
+        }
+        if (link) window.location.href = link;
+    }
+
+    document.getElementById("mark-all-read-btn").addEventListener("click", async () => {
+        allNotifications.forEach(n => n.is_read = true);
+        try { await API.markAllNotificationsRead(); } catch {}
+        document.getElementById("notif-summary").textContent = "All caught up";
+        renderNotifications();
+        showToast("All notifications marked as read.", "success");
+    });
+
+    document.querySelectorAll(".notif-filter").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".notif-filter").forEach(b => { b.classList.remove("active", "btn-primary"); b.classList.add("btn-secondary"); });
+            btn.classList.add("active", "btn-primary"); btn.classList.remove("btn-secondary");
+            activeFilter = btn.dataset.filter;
+            renderNotifications();
+        });
+    });
+
+    function timeAgo(d) {
+        if (!d) return "";
+        const ms = Date.now() - new Date(d).getTime();
+        const mins = Math.floor(ms / 60000);
+        if (mins < 1) return "Just now";
+        if (mins < 60) return `${mins}m ago`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `${hrs}h ago`;
+        const days = Math.floor(hrs / 24);
+        return `${days}d ago`;
+    }
+    function escapeHtml(s) { if (!s) return ""; return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+    loadNotifications();
+</script>
+</body>
+</html>

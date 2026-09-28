@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In — Back2You</title>
+    <meta name="description" content="Log in to your Back2You account to manage lost and found reports.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        body { background-color: var(--gray-bg); }
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+        }
+        .auth-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-gray);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: var(--shadow-lg);
+        }
+        .auth-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .auth-brand .nav-logo-mark { width: 30px; height: 30px; font-size: 1rem; }
+        .auth-title { font-size: 1.5rem; margin-bottom: 0.4rem; }
+        .auth-sub { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 2rem; }
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-gray);
+        }
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .demo-accounts {
+            background: var(--gray-bg);
+            border: 1px solid var(--border-gray);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.82rem;
+        }
+        .demo-accounts h4 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+        }
+        .demo-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            border-bottom: 1px dashed var(--border-gray);
+        }
+        .demo-row:last-child { border-bottom: none; }
+        .demo-label { font-weight: 600; color: var(--text-primary); }
+        .demo-fill-btn {
+            cursor: pointer;
+            color: var(--primary-blue);
+            font-weight: 600;
+            background: none;
+            border: none;
+            font-size: 0.82rem;
+            padding: 0;
+        }
+        .demo-fill-btn:hover { text-decoration: underline; }
+        #form-error { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="auth-page">
+    <div class="auth-card">
+        <a href="index.html" class="auth-brand">
+            <div class="nav-logo-mark">B</div>
+            Back2You
+        </a>
+
+        <h1 class="auth-title">Welcome back</h1>
+        <p class="auth-sub">Log in to manage your lost &amp; found reports.</p>
+
+        <!-- Demo accounts helper -->
+        <div class="demo-accounts">
+            <h4>Demo Accounts</h4>
+            <div class="demo-row">
+                <span class="demo-label">Admin</span>
+                <span>admin@campus.edu</span>
+                <button class="demo-fill-btn" onclick="fillDemo('admin@campus.edu','AdminPass123!')">Fill</button>
+            </div>
+            <div class="demo-row">
+                <span class="demo-label">Student</span>
+                <span>alex@campus.edu</span>
+                <button class="demo-fill-btn" onclick="fillDemo('alex@campus.edu','StudentPass123!')">Fill</button>
+            </div>
+        </div>
+
+        <div class="alert alert-info" id="form-error">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <span id="form-error-msg">Invalid email or password.</span>
+        </div>
+
+        <form id="login-form" novalidate>
+            <div class="form-group">
+                <label class="form-label" for="email">Campus Email</label>
+                <input type="email" id="email" class="form-input" placeholder="your@campus.edu" required autocomplete="email">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-btn">Log In</button>
+        </form>
+
+        <p class="auth-footer">
+            Don't have an account? <a href="register.html">Create one</a>
+        </p>
+    </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/icons.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    // Redirect if already logged in
+    if (Auth.isLoggedIn()) window.location.href = "dashboard.html";
+
+    function fillDemo(email, pw) {
+        document.getElementById("email").value = email;
+        document.getElementById("password").value = pw;
+    }
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("login-btn");
+        const errorEl = document.getElementById("form-error");
+        const errorMsg = document.getElementById("form-error-msg");
+        errorEl.style.display = "none";
+        btn.disabled = true;
+        btn.textContent = "Logging in...";
+
+        try {
+            const result = await API.login({
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+            });
+            Auth.setSession(result.access_token, result.user);
+            window.location.href = "dashboard.html";
+        } catch (err) {
+            errorMsg.textContent = err.message || "Invalid email or password.";
+            errorEl.style.display = "flex";
+            btn.disabled = false;
+            btn.textContent = "Log In";
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile — Back2You</title>
+    <meta name="description" content="Manage your Back2You profile, preferences, and account settings.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        .profile-hero {
+            background: var(--bg-white);
+            border: 1px solid var(--border-gray);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .profile-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+        .profile-info h2 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .profile-info p { color: var(--text-muted); font-size: 0.92rem; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } .profile-hero { flex-direction: column; text-align: center; } }
+        .activity-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border-gray); font-size: 0.88rem; }
+        .activity-row:last-child { border-bottom: none; }
+        .activity-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .activity-dot-blue { background: var(--primary-blue); }
+        .activity-dot-green { background: var(--primary-green); }
+        .activity-dot-yellow { background: #F59E0B; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container nav-container">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo-mark">B</div>
+            <div>Back2You <span class="nav-tagline-sub">Campus Lost &amp; Found</span></div>
+        </a>
+        <ul class="nav-links" id="nav-links-list">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="report-lost.html">Report Lost</a></li>
+            <li><a href="report-found.html">Report Found</a></li>
+            <li><a href="matches.html">Matches</a></li>
+            <li><a href="community.html">Community</a></li>
+            <li id="nav-admin-link" style="display:none"><a href="admin.html">Admin</a></li>
+        </ul>
+        <div class="nav-actions">
+            <div id="nav-auth-links" style="display:flex;gap:0.75rem;"><a href="login.html" class="btn btn-secondary btn-sm">Log In</a><a href="register.html" class="btn btn-primary btn-sm">Get Started</a></div>
+            <div id="nav-user-links" style="display:none;gap:0.75rem;align-items:center;flex-direction:row;">
+                <a href="notifications.html" class="notif-bell-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="notif-badge" id="notif-badge" style="display:none;">0</span></a>
+                <a href="profile.html" class="user-menu-btn"><div class="avatar-circle" id="nav-avatar">U</div><span id="nav-user-name">User</span></a>
+                <a href="#" id="logout-btn" class="btn btn-secondary btn-sm">Log Out</a>
+            </div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <div>
+                <h1>My Profile</h1>
+                <p class="page-subtitle">Manage your account details and preferences</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container">
+        <!-- Profile hero -->
+        <div class="profile-hero" id="profile-hero">
+            <div class="profile-avatar-large" id="profile-avatar">U</div>
+            <div class="profile-info">
+                <h2 id="profile-name">Loading...</h2>
+                <p id="profile-email">—</p>
+                <p id="profile-meta">—</p>
+                <div style="margin-top:0.75rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+                    <span class="badge badge-info" id="profile-badge-level">NEWCOMER</span>
+                    <span class="badge badge-neutral" id="profile-role">STUDENT</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-main">
+                <!-- Edit profile form -->
+                <div class="card" style="margin-bottom:1.5rem;">
+                    <div class="card-header">
+                        <h3 class="card-title">Edit Profile</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="profile-form">
+                            <div class="two-col">
+                                <div class="form-group">
+                                    <label class="form-label" for="full-name">Full Name</label>
+                                    <input type="text" id="full-name" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="student-id">Student ID</label>
+                                    <input type="text" id="student-id" class="form-input">
+                                </div>
+                            </div>
+                            <div class="two-col">
+                                <div class="form-group">
+                                    <label class="form-label" for="department">Department</label>
+                                    <select id="department" class="form-input form-select">
+                                        <option value="">Select department</option>
+                                        <option>Computer Science</option>
+                                        <option>Electronics</option>
+                                        <option>Mechanical</option>
+                                        <option>Civil</option>
+                                        <option>MBA</option>
+                                        <option>Design</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="year">Year of Study</label>
+                                    <select id="year" class="form-input form-select">
+                                        <option value="">Select year</option>
+                                        <option>1st Year</option>
+                                        <option>2nd Year</option>
+                                        <option>3rd Year</option>
+                                        <option>4th Year</option>
+                                        <option>PG</option>
+                                        <option>Faculty</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="phone">Phone Number (Optional)</label>
+                                <input type="tel" id="phone" class="form-input" placeholder="Used only for item recovery coordination">
+                            </div>
+
+                            <div class="alert alert-info" id="profile-error" style="display:none;"><span id="profile-error-msg"></span></div>
+
+                            <div style="display:flex;gap:1rem;justify-content:flex-end;">
+                                <button type="submit" class="btn btn-primary" id="profile-save-btn">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Change password -->
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">Change Password</h3></div>
+                    <div class="card-body">
+                        <form id="password-form">
+                            <div class="form-group">
+                                <label class="form-label" for="current-pw">Current Password</label>
+                                <input type="password" id="current-pw" class="form-input" required autocomplete="current-password">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="new-pw">New Password</label>
+                                <input type="password" id="new-pw" class="form-input" required autocomplete="new-password">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="confirm-pw">Confirm New Password</label>
+                                <input type="password" id="confirm-pw" class="form-input" required autocomplete="new-password">
+                            </div>
+                            <div style="display:flex;justify-content:flex-end;">
+                                <button type="submit" class="btn btn-secondary" id="pw-save-btn">Update Password</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar: stats + activity -->
+            <div class="dashboard-sidebar">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">My Activity</h3><a href="dashboard.html" class="card-link">Dashboard</a></div>
+                    <div class="card-body" id="activity-body">
+                        <div class="loading-state"><div class="loading-spinner"></div></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">Danger Zone</h3></div>
+                    <div class="card-body">
+                        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem;">Permanently delete your account and all associated data.</p>
+                        <button class="btn btn-outline" style="color:#DC2626;border-color:#DC2626;" onclick="confirmDeleteAccount()">Delete Account</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/icons.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    Auth.requireAuth();
+
+    async function loadProfile() {
+        try {
+            const profile = await API.getProfile();
+            // Hero
+            document.getElementById("profile-name").textContent = profile.full_name || "Unknown";
+            document.getElementById("profile-email").textContent = profile.email || "—";
+            document.getElementById("profile-meta").textContent = [profile.department, profile.year_of_study].filter(Boolean).join(" • ") || "—";
+            document.getElementById("profile-avatar").textContent = (profile.full_name || "U")[0].toUpperCase();
+            document.getElementById("profile-badge-level").textContent = profile.badge_level || "NEWCOMER";
+            document.getElementById("profile-role").textContent = profile.role || "STUDENT";
+
+            // Form pre-fill
+            document.getElementById("full-name").value = profile.full_name || "";
+            document.getElementById("student-id").value = profile.student_id || "";
+            document.getElementById("phone").value = profile.phone || "";
+            if (profile.department) document.getElementById("department").value = profile.department;
+            if (profile.year_of_study) document.getElementById("year").value = profile.year_of_study;
+
+            // Activity
+            const actEl = document.getElementById("activity-body");
+            actEl.innerHTML = `
+                <div class="activity-row"><div class="activity-dot activity-dot-blue"></div><div style="flex:1;">Lost Reports Submitted</div><strong>${profile.items_lost || 0}</strong></div>
+                <div class="activity-row"><div class="activity-dot activity-dot-green"></div><div style="flex:1;">Found Reports Submitted</div><strong>${profile.items_found || 0}</strong></div>
+                <div class="activity-row"><div class="activity-dot activity-dot-yellow"></div><div style="flex:1;">Claims Submitted</div><strong>${profile.claims_submitted || 0}</strong></div>
+                <div class="activity-row"><div class="activity-dot activity-dot-green"></div><div style="flex:1;">Items Successfully Returned</div><strong>${profile.items_returned || 0}</strong></div>
+                <div class="activity-row"><div class="activity-dot activity-dot-blue"></div><div style="flex:1;">Helper Points</div><strong style="color:var(--primary-blue);">${profile.helper_points || 0}</strong></div>
+                <div class="activity-row"><div class="activity-dot activity-dot-yellow"></div><div style="flex:1;">Current Streak</div><strong>🔥 ${profile.current_streak || 0} days</strong></div>
+            `;
+        } catch (err) {
+            showToast("Could not load profile. Backend may not be connected.", "error");
+        }
+    }
+
+    document.getElementById("profile-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("profile-save-btn");
+        const errorEl = document.getElementById("profile-error");
+        errorEl.style.display = "none";
+        btn.disabled = true; btn.textContent = "Saving...";
+        try {
+            const updated = await API.updateProfile({
+                full_name: document.getElementById("full-name").value,
+                student_id: document.getElementById("student-id").value,
+                department: document.getElementById("department").value,
+                year_of_study: document.getElementById("year").value,
+                phone: document.getElementById("phone").value,
+            });
+            // Update session
+            const user = Auth.getUser();
+            Auth.setSession(Auth.getToken(), { ...user, name: updated.full_name });
+            showToast("Profile updated successfully.", "success");
+        } catch (err) {
+            document.getElementById("profile-error-msg").textContent = err.message || "Failed to update profile.";
+            errorEl.style.display = "flex";
+        }
+        btn.disabled = false; btn.textContent = "Save Changes";
+    });
+
+    document.getElementById("password-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("pw-save-btn");
+        const np = document.getElementById("new-pw").value;
+        const cp = document.getElementById("confirm-pw").value;
+        if (np !== cp) { showToast("Passwords do not match.", "error"); return; }
+        btn.disabled = true; btn.textContent = "Updating...";
+        try {
+            await API.changePassword({ current_password: document.getElementById("current-pw").value, new_password: np });
+            showToast("Password updated successfully.", "success");
+            document.getElementById("password-form").reset();
+        } catch (err) {
+            showToast(err.message || "Failed to change password.", "error");
+        }
+        btn.disabled = false; btn.textContent = "Update Password";
+    });
+
+    function confirmDeleteAccount() {
+        if (confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
+            showToast("Account deletion requested. Please contact admin.", "info");
+        }
+    }
+
+    loadProfile();
+</script>
+</body>
+</html>

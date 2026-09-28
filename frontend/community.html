@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Helper — Back2You</title>
+    <meta name="description" content="Community leaderboard and Helper rewards on Back2You campus Lost and Found.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        .leaderboard-table { width: 100%; border-collapse: collapse; }
+        .leaderboard-table th {
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border-gray);
+            background: var(--gray-bg);
+        }
+        .leaderboard-table td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border-gray); vertical-align: middle; }
+        .leaderboard-table tr:last-child td { border-bottom: none; }
+        .leaderboard-table tr:hover td { background: var(--gray-bg); }
+        .rank-cell { font-size: 1.1rem; font-weight: 800; width: 48px; text-align: center; }
+        .rank-1 { color: #F59E0B; }
+        .rank-2 { color: #9CA3AF; }
+        .rank-3 { color: #CD7F32; }
+        .user-cell { display: flex; align-items: center; gap: 0.75rem; }
+        .leader-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+        .leader-name { font-weight: 700; font-size: 0.95rem; }
+        .leader-dept { font-size: 0.78rem; color: var(--text-muted); }
+        .points-cell { font-weight: 800; color: var(--primary-blue); font-size: 1rem; }
+        .streak-cell { display: flex; align-items: center; gap: 0.4rem; font-size: 0.88rem; }
+        /* Badges section */
+        .badges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .badge-card { background: var(--bg-white); border: 1px solid var(--border-gray); border-radius: var(--radius-md); padding: 1.25rem; text-align: center; }
+        .badge-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .badge-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.3rem; }
+        .badge-desc { font-size: 0.78rem; color: var(--text-muted); }
+        .badge-card.locked { opacity: 0.4; filter: grayscale(1); }
+        /* My stats card */
+        .my-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .my-stat { background: var(--gray-bg); border-radius: var(--radius-sm); padding: 0.75rem 1rem; text-align: center; }
+        .my-stat-val { font-size: 1.5rem; font-weight: 800; color: var(--primary-blue); }
+        .my-stat-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
+        @media (max-width: 600px) { .badges-grid { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container nav-container">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo-mark">B</div>
+            <div>Back2You <span class="nav-tagline-sub">Campus Lost &amp; Found</span></div>
+        </a>
+        <ul class="nav-links" id="nav-links-list">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="report-lost.html">Report Lost</a></li>
+            <li><a href="report-found.html">Report Found</a></li>
+            <li><a href="matches.html">Matches</a></li>
+            <li><a href="community.html" class="active">Community</a></li>
+            <li id="nav-admin-link" style="display:none"><a href="admin.html">Admin</a></li>
+        </ul>
+        <div class="nav-actions">
+            <div id="nav-auth-links" style="display:flex;gap:0.75rem;"><a href="login.html" class="btn btn-secondary btn-sm">Log In</a><a href="register.html" class="btn btn-primary btn-sm">Get Started</a></div>
+            <div id="nav-user-links" style="display:none;gap:0.75rem;align-items:center;flex-direction:row;">
+                <a href="notifications.html" class="notif-bell-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="notif-badge" id="notif-badge" style="display:none;">0</span></a>
+                <a href="profile.html" class="user-menu-btn"><div class="avatar-circle" id="nav-avatar">U</div><span id="nav-user-name">User</span></a>
+                <a href="#" id="logout-btn" class="btn btn-secondary btn-sm">Log Out</a>
+            </div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <div>
+                <h1>Community Helper Board</h1>
+                <p class="page-subtitle">Recognizing students who help reunite lost items with their owners</p>
+            </div>
+            <a href="report-found.html" class="btn btn-primary">Report a Find</a>
+        </div>
+    </div>
+</div>
+
+<div class="page-content">
+    <div class="container">
+        <div class="dashboard-grid">
+            <!-- Leaderboard -->
+            <div class="dashboard-main">
+                <!-- Period filter -->
+                <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem;flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm tab-period active" data-period="all">All Time</button>
+                    <button class="btn btn-secondary btn-sm tab-period" data-period="month">This Month</button>
+                    <button class="btn btn-secondary btn-sm tab-period" data-period="week">This Week</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Leaderboard</h3>
+                        <span id="lb-count" style="font-size:0.82rem;color:var(--text-muted);">Loading...</span>
+                    </div>
+                    <div class="card-body" style="padding:0;" id="leaderboard-container">
+                        <div class="loading-state" style="padding:3rem;"><div class="loading-spinner"></div></div>
+                    </div>
+                </div>
+
+                <!-- Badges section -->
+                <div class="card" style="margin-top:1.5rem;">
+                    <div class="card-header"><h3 class="card-title">Achievement Badges</h3></div>
+                    <div class="card-body">
+                        <div class="badges-grid" id="badges-grid">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar: My stats + How to earn -->
+            <div class="dashboard-sidebar">
+                <div class="card" id="my-stats-card">
+                    <div class="card-header"><h3 class="card-title">My Helper Stats</h3></div>
+                    <div class="card-body" id="my-stats-body">
+                        <div class="loading-state"><div class="loading-spinner"></div></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">How to Earn Points</h3></div>
+                    <div class="card-body">
+                        <div style="display:flex;flex-direction:column;gap:0.85rem;">
+                            <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+                                <span class="badge badge-success" style="flex-shrink:0;margin-top:2px;">+50</span>
+                                <span style="font-size:0.88rem;color:var(--text-secondary);">Report a found item that gets verified and returned</span>
+                            </div>
+                            <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+                                <span class="badge badge-info" style="flex-shrink:0;margin-top:2px;">+10</span>
+                                <span style="font-size:0.88rem;color:var(--text-secondary);">Submit a found item report</span>
+                            </div>
+                            <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+                                <span class="badge badge-warning" style="flex-shrink:0;margin-top:2px;">+5</span>
+                                <span style="font-size:0.88rem;color:var(--text-secondary);">Upload a clear photo with a report</span>
+                            </div>
+                            <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+                                <span class="badge badge-neutral" style="flex-shrink:0;margin-top:2px;">x2</span>
+                                <span style="font-size:0.88rem;color:var(--text-secondary);">Streak multiplier — report for 7+ consecutive days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/icons.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    const BADGES = [
+        { name: "First Finder", icon: "🔍", desc: "Submit your first found item report", threshold: 1 },
+        { name: "Good Samaritan", icon: "🤝", desc: "Get 3 items successfully returned", threshold: 3 },
+        { name: "Campus Guardian", icon: "🛡️", desc: "Reach 200 Helper Points", threshold: 5 },
+        { name: "Streak Master", icon: "🔥", desc: "Maintain a 7-day reporting streak", threshold: 7 },
+        { name: "Top Helper", icon: "🏆", desc: "Reach the leaderboard top 10", threshold: 10 },
+        { name: "Legend", icon: "⭐", desc: "500+ Helper Points earned", threshold: 20 },
+    ];
+
+    async function loadLeaderboard(period = "all") {
+        const container = document.getElementById("leaderboard-container");
+        container.innerHTML = `<div class="loading-state" style="padding:2rem;"><div class="loading-spinner"></div></div>`;
+        try {
+            const leaders = await API.getLeaderboard({ period, limit: 20 });
+            document.getElementById("lb-count").textContent = `${leaders.length} participants`;
+            if (!leaders.length) {
+                container.innerHTML = `<div class="empty-state" style="padding:2rem;"><h4>No data yet</h4><p>Be the first to contribute!</p></div>`;
+                return;
+            }
+            container.innerHTML = `<table class="leaderboard-table">
+                <thead><tr>
+                    <th style="text-align:center;">#</th>
+                    <th>Student</th>
+                    <th>Points</th>
+                    <th>Streak</th>
+                    <th>Returned</th>
+                    <th>Level</th>
+                </tr></thead>
+                <tbody>
+                ${leaders.map((u, i) => `
+                    <tr>
+                        <td class="rank-cell ${i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : ''}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</td>
+                        <td><div class="user-cell">
+                            <div class="leader-avatar" style="background:${avatarColor(i)};">${(u.full_name || "U")[0].toUpperCase()}</div>
+                            <div><div class="leader-name">${escapeHtml(u.full_name || "Student")}</div><div class="leader-dept">${escapeHtml(u.department || "Campus")}</div></div>
+                        </div></td>
+                        <td class="points-cell">${u.helper_points || 0}</td>
+                        <td><div class="streak-cell">🔥 <span>${u.current_streak || 0}d</span></div></td>
+                        <td>${u.items_returned || 0}</td>
+                        <td><span class="badge badge-neutral">${u.badge_level || "NEWCOMER"}</span></td>
+                    </tr>`).join("")}
+                </tbody>
+            </table>`;
+        } catch {
+            container.innerHTML = `<div class="empty-state" style="padding:2rem;"><h4>Leaderboard unavailable</h4><p>Backend not connected. Showing demo layout.</p></div>`;
+            renderDemoLeaderboard(container);
+        }
+    }
+
+    function renderDemoLeaderboard(container) {
+        const demo = [
+            { full_name: "Priya Sharma", department: "CS", helper_points: 340, current_streak: 12, items_returned: 6, badge_level: "TOP_HELPER" },
+            { full_name: "Arjun Mehta", department: "Electronics", helper_points: 290, current_streak: 8, items_returned: 5, badge_level: "GUARDIAN" },
+            { full_name: "Kavya Reddy", department: "MBA", helper_points: 180, current_streak: 3, items_returned: 3, badge_level: "SAMARITAN" },
+            { full_name: "Rohan Singh", department: "CS", helper_points: 100, current_streak: 1, items_returned: 2, badge_level: "FINDER" },
+        ];
+        container.innerHTML = `<table class="leaderboard-table">
+            <thead><tr><th style="text-align:center;">#</th><th>Student</th><th>Points</th><th>Streak</th><th>Returned</th><th>Level</th></tr></thead>
+            <tbody>${demo.map((u, i) => `<tr>
+                <td class="rank-cell ${i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : ''}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</td>
+                <td><div class="user-cell"><div class="leader-avatar" style="background:${avatarColor(i)};">${u.full_name[0]}</div><div><div class="leader-name">${u.full_name}</div><div class="leader-dept">${u.department}</div></div></div></td>
+                <td class="points-cell">${u.helper_points}</td>
+                <td><div class="streak-cell">🔥 ${u.current_streak}d</div></td>
+                <td>${u.items_returned}</td>
+                <td><span class="badge badge-neutral">${u.badge_level}</span></td>
+            </tr>`).join("")}</tbody></table>`;
+    }
+
+    function renderBadges(userPoints = 0, returnedCount = 0) {
+        const grid = document.getElementById("badges-grid");
+        grid.innerHTML = BADGES.map(b => {
+            const unlocked = returnedCount >= b.threshold;
+            return `<div class="badge-card ${unlocked ? '' : 'locked'}">
+                <div class="badge-icon">${b.icon}</div>
+                <div class="badge-name">${b.name}</div>
+                <div class="badge-desc">${b.desc}</div>
+                ${unlocked ? `<span class="badge badge-success" style="margin-top:0.5rem;display:inline-block;">Unlocked</span>` : ""}
+            </div>`;
+        }).join("");
+    }
+
+    async function loadMyStats() {
+        const el = document.getElementById("my-stats-body");
+        if (!Auth.isLoggedIn()) {
+            el.innerHTML = `<p style="font-size:0.88rem;color:var(--text-muted);"><a href="login.html">Log in</a> to see your stats.</p>`;
+            return;
+        }
+        try {
+            const profile = await API.getProfile();
+            el.innerHTML = `<div class="my-stats-grid">
+                <div class="my-stat"><div class="my-stat-val">${profile.helper_points || 0}</div><div class="my-stat-label">Points</div></div>
+                <div class="my-stat"><div class="my-stat-val">${profile.current_streak || 0}</div><div class="my-stat-label">Day Streak</div></div>
+                <div class="my-stat"><div class="my-stat-val">${profile.items_returned || 0}</div><div class="my-stat-label">Returned</div></div>
+                <div class="my-stat"><div class="my-stat-val">${profile.items_found || 0}</div><div class="my-stat-label">Found Reports</div></div>
+            </div>
+            <div style="margin-top:1rem;padding:0.75rem;background:var(--gray-bg);border-radius:var(--radius-sm);display:flex;align-items:center;gap:0.5rem;">
+                <span style="font-size:1.3rem;">${badgeEmoji(profile.badge_level)}</span>
+                <div>
+                    <div style="font-weight:700;font-size:0.9rem;">${profile.badge_level || "NEWCOMER"}</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);">Your current level</div>
+                </div>
+            </div>`;
+            renderBadges(profile.helper_points, profile.items_returned);
+        } catch {
+            el.innerHTML = `<p style="font-size:0.88rem;color:var(--text-muted);">Stats unavailable.</p>`;
+            renderBadges(0, 0);
+        }
+    }
+
+    function badgeEmoji(level) {
+        const map = { NEWCOMER: "🌱", FINDER: "🔍", SAMARITAN: "🤝", GUARDIAN: "🛡️", TOP_HELPER: "🏆", LEGEND: "⭐" };
+        return map[level] || "🌱";
+    }
+
+    const colors = ["#2563EB","#16A34A","#F59E0B","#DC2626","#7C3AED","#0891B2"];
+    function avatarColor(i) { return colors[i % colors.length]; }
+    function escapeHtml(s) { if (!s) return ""; return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+    // Period tabs
+    document.querySelectorAll(".tab-period").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".tab-period").forEach(b => { b.classList.remove("active", "btn-primary"); b.classList.add("btn-secondary"); });
+            btn.classList.add("active", "btn-primary"); btn.classList.remove("btn-secondary");
+            loadLeaderboard(btn.dataset.period);
+        });
+    });
+
+    loadLeaderboard("all");
+    loadMyStats();
+    renderBadges(0, 0); // default locked state until profile loads
+</script>
+</body>
+</html>

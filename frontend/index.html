@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Back2You — AI-Powered Campus Lost & Found</title>
+    <meta name="description" content="Back2You uses AI-powered image and description matching to help reconnect lost belongings with their owners on campus.">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        /* Landing page specific */
+        .hero {
+            padding: 5rem 0 4rem;
+            text-align: center;
+            background: linear-gradient(180deg, #F0F6FF 0%, #FFFFFF 100%);
+            border-bottom: 1px solid var(--border-gray);
+        }
+        .hero-eyebrow {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary-blue);
+            background: var(--primary-blue-light);
+            border: 1px solid #BFDBFE;
+            padding: 0.3rem 0.85rem;
+            border-radius: 9999px;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            max-width: 680px;
+            margin: 0 auto 1.25rem;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+        }
+        .hero-sub {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 560px;
+            margin: 0 auto 2.5rem;
+        }
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        /* Process steps */
+        .process-section {
+            padding: 4.5rem 0;
+            background: var(--bg-white);
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .section-eyebrow {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+        .process-steps {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 0;
+            flex-wrap: wrap;
+        }
+        .process-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            max-width: 180px;
+        }
+        .process-number {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.85rem;
+            position: relative;
+            z-index: 2;
+        }
+        .process-connector {
+            flex: 1;
+            height: 2px;
+            background: var(--border-gray);
+            align-self: 22px;
+            margin: 22px -10px 0;
+            min-width: 30px;
+            display: flex;
+        }
+        .process-step-label {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+        }
+        .process-step-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        /* Feature grid */
+        .feature-section {
+            background: var(--gray-bg);
+            padding: 4.5rem 0;
+            border-top: 1px solid var(--border-gray);
+            border-bottom: 1px solid var(--border-gray);
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+        .feature-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border-gray);
+            border-radius: var(--radius-md);
+            padding: 1.75rem 1.5rem;
+        }
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-blue-light);
+            color: var(--primary-blue);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .feature-card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .feature-card p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+        /* Impact section */
+        .impact-section {
+            padding: 4rem 0;
+            background: var(--bg-white);
+        }
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            text-align: center;
+        }
+        .impact-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+            line-height: 1;
+            margin-bottom: 0.4rem;
+        }
+        .impact-label {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        /* CTA Banner */
+        .cta-banner {
+            background: var(--primary-blue);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        .cta-banner h2 { color: white; margin-bottom: 1rem; }
+        .cta-banner p { color: #BFDBFE; margin-bottom: 2rem; }
+        .btn-white {
+            background: white;
+            color: var(--primary-blue);
+            border-color: white;
+        }
+        .btn-white:hover {
+            background: #EFF6FF;
+            color: var(--primary-blue);
+        }
+        @media (max-width: 900px) {
+            .feature-grid { grid-template-columns: repeat(2, 1fr); }
+            .impact-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 2rem; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .impact-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <div class="container nav-container">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-logo-mark">B</div>
+            <div>
+                Back2You
+                <span class="nav-tagline-sub">Campus Lost &amp; Found</span>
+            </div>
+        </a>
+
+        <ul class="nav-links" id="nav-links-list">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="index.html#how-it-works">How It Works</a></li>
+            <li><a href="report-lost.html">Report Lost</a></li>
+            <li><a href="report-found.html">Report Found</a></li>
+            <li><a href="matches.html">Matches</a></li>
+            <li><a href="community.html">Community</a></li>
+            <li id="nav-admin-link" style="display:none"><a href="admin.html">Admin</a></li>
+        </ul>
+
+        <div class="nav-actions">
+            <!-- Auth Links (shown when logged out) -->
+            <div id="nav-auth-links" style="display:flex;gap:0.75rem;align-items:center;">
+                <a href="login.html" class="btn btn-secondary btn-sm">Log In</a>
+                <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+            </div>
+
+            <!-- User Links (shown when logged in) -->
+            <div id="nav-user-links" style="display:none;gap:0.75rem;align-items:center;flex-direction:row;">
+                <a href="notifications.html" class="notif-bell-btn" title="Notifications" id="notif-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                    <span class="notif-badge" id="notif-badge" style="display:none;">0</span>
+                </a>
+                <a href="dashboard.html" class="user-menu-btn" id="user-menu-btn">
+                    <div class="avatar-circle" id="nav-avatar">U</div>
+                    <span id="nav-user-name">User</span>
+                </a>
+                <a href="#" id="logout-btn" class="btn btn-secondary btn-sm">Log Out</a>
+            </div>
+
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-eyebrow">AI-Powered Campus Lost &amp; Found</div>
+        <h1>Lost something on campus?</h1>
+        <p class="hero-sub">Back2You uses AI-powered image and description matching to help reconnect lost belongings with their owners.</p>
+        <div class="hero-cta">
+            <a href="report-lost.html" class="btn btn-primary btn-lg">Report Lost Item</a>
+            <a href="report-found.html" class="btn btn-outline btn-lg">Report Found Item</a>
+        </div>
+    </div>
+</section>
+
+<!-- Process Steps -->
+<section class="process-section" id="how-it-works">
+    <div class="container">
+        <div class="section-header">
+            <p class="section-eyebrow">How Back2You Works</p>
+            <h2>From report to recovery in five steps</h2>
+        </div>
+        <div class="process-steps">
+            <div class="process-step">
+                <div class="process-number">1</div>
+                <div class="process-step-label">Report</div>
+                <div class="process-step-sub">Submit details, image, location &amp; time</div>
+            </div>
+            <div class="process-connector"></div>
+            <div class="process-step">
+                <div class="process-number">2</div>
+                <div class="process-step-label">AI Analyzes</div>
+                <div class="process-step-sub">Computer Vision + NLP processes the report</div>
+            </div>
+            <div class="process-connector"></div>
+            <div class="process-step">
+                <div class="process-number">3</div>
+                <div class="process-step-label">Find Matches</div>
+                <div class="process-step-sub">Ranked candidates with confidence scores</div>
+            </div>
+            <div class="process-connector"></div>
+            <div class="process-step">
+                <div class="process-number">4</div>
+                <div class="process-step-label">Verify</div>
+                <div class="process-step-sub">Claim submitted and reviewed by admin</div>
+            </div>
+            <div class="process-connector"></div>
+            <div class="process-step">
+                <div class="process-number">5</div>
+                <div class="process-step-label">Recover</div>
+                <div class="process-step-sub">Item returned, finder rewarded</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="feature-section">
+    <div class="container">
+        <div class="section-header">
+            <p class="section-eyebrow">Platform Features</p>
+            <h2>Built for campus communities</h2>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>
+                </div>
+                <h3>AI Matching</h3>
+                <p>Computer Vision and NLP embeddings calculate similarity across images and descriptions automatically.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </div>
+                <h3>Smart Search</h3>
+                <p>Filter by category, location, date, brand, and color. Traditional search plus AI matching intelligence.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <h3>Claim Verification</h3>
+                <p>Ownership verification through structured questions reviewed by campus administrators.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                </div>
+                <h3>Community Helper</h3>
+                <p>Streak system, points, and badges reward students who actively return lost belongings to their owners.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Impact -->
+<section class="impact-section">
+    <div class="container">
+        <div class="section-header">
+            <p class="section-eyebrow">Platform Impact</p>
+            <h2>Built to make a difference</h2>
+        </div>
+        <div class="impact-grid">
+            <div>
+                <div class="impact-number" id="stat-reports">—</div>
+                <div class="impact-label">Items Reported</div>
+            </div>
+            <div>
+                <div class="impact-number" id="stat-returned">—</div>
+                <div class="impact-label">Items Returned</div>
+            </div>
+            <div>
+                <div class="impact-number" id="stat-helpers">—</div>
+                <div class="impact-label">Active Helpers</div>
+            </div>
+            <div>
+                <div class="impact-number" id="stat-recoveries">—</div>
+                <div class="impact-label">Successful Recoveries</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-banner">
+    <div class="container">
+        <h2>Ready to find what's lost?</h2>
+        <p>Join the Back2You campus community. Report lost items or help others by reporting what you find.</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+            <a href="register.html" class="btn btn-white btn-lg">Create Account</a>
+            <a href="report-found.html" class="btn btn-lg" style="background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.4);">Report a Find</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <a href="index.html" class="nav-brand" style="margin-bottom:0.75rem;display:inline-flex;">
+                    <div class="nav-logo-mark">B</div>
+                    <span style="margin-left:0.6rem;font-weight:800;color:var(--text-primary);">Back2You</span>
+                </a>
+                <p style="font-size:0.88rem;color:var(--text-muted);margin-top:0.5rem;max-width:260px;">Helping lost belongings find their way Back2You. AI-powered campus Lost &amp; Found.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="report-lost.html">Report Lost Item</a></li>
+                    <li><a href="report-found.html">Report Found Item</a></li>
+                    <li><a href="matches.html">View Matches</a></li>
+                    <li><a href="community.html">Community</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Account</h4>
+                <ul>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Register</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="claims.html">Claims</a></li>
+                    <li><a href="notifications.html">Notifications</a></li>
+                    <li><a href="admin.html">Admin Portal</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 Back2You. GDG on Campus — AI/ML &amp; Data Science.</span>
+            <span>Helping lost belongings find their way Back2You.</span>
+        </div>
+    </div>
+</footer>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="js/icons.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script>
+    // Load platform stats from API
+    async function loadImpactStats() {
+        try {
+            const stats = await API.getAdminStats();
+            document.getElementById("stat-reports").textContent = stats.total_reports ?? "—";
+            document.getElementById("stat-returned").textContent = stats.returned_items ?? "—";
+            document.getElementById("stat-helpers").textContent = stats.active_users ?? "—";
+            document.getElementById("stat-recoveries").textContent = stats.successful_recoveries ?? "—";
+        } catch {
+            // Backend not connected yet — keep dashes
+        }
+    }
+    loadImpactStats();
+</script>
+</body>
+</html>
