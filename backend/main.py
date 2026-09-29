@@ -86,7 +86,7 @@ def startup_event():
                     "status": "ACTIVE"
                 }
                 new_item = create_item(item_data)
-                process_item_ai_embeddings(new_item)
+               # process_item_ai_embeddings(new_item)
             print("[Back2You] Seeded initial campus lost & found benchmark reports.")
     except Exception as e:
         print(f"[Back2You] Startup seed note: {e}")
