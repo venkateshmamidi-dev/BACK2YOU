@@ -14,10 +14,9 @@ scikit-learn>=1.4.0
 pillow>=10.2.0
 
 torch==2.2.2
+torchvision==0.17.2
 sentence-transformers>=2.5.0
 
 requests>=2.31.0
 httpx>=0.27.0
 email-validator>=2.0.0
-
-torchvision==0.17.2
